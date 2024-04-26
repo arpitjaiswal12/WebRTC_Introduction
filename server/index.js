@@ -3,7 +3,9 @@ import { Server, Socket } from "socket.io";
 import bodyParser from "body-parser";
 
 const app = express();
-const io = Server(); //creating the socket server
+const io = new Server({
+  cors: true,
+}); //creating the socket server
 
 const emailToSocketMapping = new Map();
 
@@ -14,6 +16,7 @@ io.on("connection", (socket) => {
     console.log("User", emailId, "Joined Room ", roomId);
     emailToSocketMapping.set(emailId, socket.id);
     socket.join(roomId);
+    socket.emit('joined-room',{roomId})
     socket.broadcast.to(roomId).emit("user-join", { emailId }); //This means that all other clients in the same room will receive this event. The event data includes the emailId of the user who joined the room.
   });
 });
