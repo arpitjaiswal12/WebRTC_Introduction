@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { useSocket } from "../providers/socket";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
@@ -10,14 +10,18 @@ export default function HomePage() {
   const [emailId, setEmailId] = useState();
   const [roomId, setRoomId] = useState();
 
-  const handleRoomJoined = ({ roomId }) => {
+  const handleRoomJoined = useCallback(({ roomId }) => {
     console.log("Room Joined", roomId);
     navigate(`/room/${roomId}`);
-  };
+  });
 
   useEffect(() => {
     socket.on("joined-room", handleRoomJoined);
-  }, [socket]);
+    //clean up multiple rendring
+    return () => {
+      socket.off("joined-room", handleRoomJoined);
+    };
+  }, [handleRoomJoined, socket]);
 
   const handleJoinRoom = () => {
     socket.emit("join-room", { emailId: emailId, roomId: roomId });
@@ -25,7 +29,7 @@ export default function HomePage() {
   return (
     <section>
       <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
+        <div className=" w-full">
           <div className="mb-2 flex justify-center">
             <img
               src="https://cdn-icons-png.flaticon.com/256/5761/5761917.png"

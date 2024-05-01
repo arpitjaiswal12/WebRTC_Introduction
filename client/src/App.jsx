@@ -1,16 +1,18 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import { SocketProvider } from "./providers/socket";
+import { SocketProvider } from "./providers/socket.jsx";
+import RoomPage from "./pages/RoomPage";
+import { PeerProvider } from "./providers/peer.jsx";
 function App() {
   return (
-    <>
       <SocketProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/room/:roomId" element={<h1>hello new room </h1>} />
-        </Routes>
+        <PeerProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/room/:roomId" element={<RoomPage />} />
+          </Routes>
+        </PeerProvider>
       </SocketProvider>
-    </>
   );
 }
 
